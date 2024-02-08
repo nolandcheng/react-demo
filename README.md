@@ -5,7 +5,7 @@
 版本：React18
 与 Vue 的比较：文中的引用结合倾斜文本记录
 
-## 1.介绍
+## 1. 介绍
 
 - UI 组件：页面或者说项目由一个个组件拼接而成，组件可进行复用。
 - 虚拟 DOM：优化原生 DOM 来实现页面变化，性能开销更小。
@@ -14,7 +14,7 @@
 - Hooks：16.8 新增的特性，优化渲染、更好的拆分和复用组件。
 - Facebook 专门团队维护。
 
-## 2.安装/启动
+## 2. 安装/启动
 
 这里我们采用 yarn 作为包管理工具
 
@@ -35,7 +35,7 @@
 3.yarn start
 ```
 
-### 3.Hello World
+### 3. Hello World
 
 简单的使用 React 元素（虚拟 DOM）的例子，命令式编程。
 
@@ -72,7 +72,7 @@ root.render(button)
 > `ReactDOM.render(button, document.getElememtById("root"))`
 > 老版本（React17 及以下）的使用方式
 
-### 4.JSX
+### 4. JSX
 
 JSX 是一种 JS 的语法扩展，它可以让我们在 JS 中书写一种类似 HTML 的标签，是`React.createElement()`的语法糖，由于其简洁性，在 React 组件开发中广泛存在。
 
