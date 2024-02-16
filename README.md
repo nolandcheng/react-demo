@@ -26,8 +26,7 @@
 3.npx react-scripts start -- 运行
 ```
 
-使用 `create react-app` 可以在不安装全局`create-react-app`的情况下创建 React 项目，React（
-**当前版本 18.2**） 项目是基于 webpack 配置的。
+使用 `create react-app` 可以在不安装全局`create-react-app`的情况下创建 React 项目，React（**当前版本 18.2**） 项目是基于 webpack 配置的。
 
 ```sql
 1.yarn create react-app my-react
@@ -89,9 +88,7 @@ JSX 语法需要遵循 3 个规则：
 
 > _相较于 Vue 的 template，React 的 jsx 关于标签和属性要严格的多。_
 
-<!-- 但在实际开发中，太多的导入导出不免有些繁琐，Vue 有提供专门的单文件组件`.vue`，React 我们也需要更简洁的方案：一个以`.jsx` 结尾的文件 -->
-
-#### 4.1 v-for 渲染列表
+下面是一个关于 for 循环列表渲染的例子
 
 ```jsx
 const data = [1, 2, 3]
@@ -104,3 +101,34 @@ const list = (
   </ul>
 )
 ```
+
+在实际开发中，大量的 js 文件来导入导出十分繁琐，Vue 有提供专门的单文件组件`.vue`，React 我们也需要更简洁的方案：一个以`.jsx` 结尾的文件。
+
+### 5. 组件
+
+#### 5.1 函数式组件
+
+```js
+// 组件首字母必须大写
+const App = () => {
+  return <div>一个函数式组件</div>
+}
+
+// root根元素的创建之后不在赘述
+const root = ReactDOM.createRoot(document.getElememtById("root"))
+
+root.render(<App />)
+```
+
+#### 5.2 类组件
+
+```js
+// 必须继承React.Component
+class App extends React.Component {
+  render() {
+    return <div>一个类组件</div>
+  }
+}
+```
+
+无论是那种组件，都要返回一个 `jsx`，通常而言，使用函数式组件更多。
