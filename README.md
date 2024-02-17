@@ -85,8 +85,7 @@ JSX 语法需要遵循 3 个规则：
 
 - 使用大括号`{}`来表示 JS 表达式（有值），`null`、`undefined` 和**布尔值**不会显示。
 - 使用双大括号`{{}}`来表示 CSS，`class` 用 `className` 代替，`style` 中使用对象设置。
-
-> _相较于 Vue 的 template，React 的 jsx 关于标签和属性要严格的多。_
+- 绑定事件需传入函数名或直接写回调函数。
 
 下面是一个关于 for 循环列表渲染的例子
 
@@ -96,11 +95,20 @@ const data = [1, 2, 3]
 const list = (
   <ul className="ul" style={{ backgroundColor: "red" }}>
     {data.map((item, index) => (
-      <li key={index}>{item}</li>
+      <li key={index} onClick={() => alert(123)}>
+        {item}
+      </li>
     ))}
   </ul>
 )
 ```
+
+> _相较于 Vue 的 template，React 的 jsx 关于标签和属性要严格的多。_
+
+**关于事件**
+
+1. React 函数中，`return false` 无效
+2. 函数会携带 React 包装后的事件对象。
 
 在实际开发中，大量的 js 文件来导入导出十分繁琐，Vue 有提供专门的单文件组件`.vue`，React 我们也需要更简洁的方案：一个以`.jsx` 结尾的文件。
 
@@ -132,3 +140,18 @@ class App extends React.Component {
 ```
 
 无论是那种组件，都要返回一个 `jsx`，通常而言，使用函数式组件更多。
+
+#### 5.3 props
+
+```js
+// 父组件
+const parent = () => {
+  return <children test="123" />
+}
+
+// 子组件
+const children = (props) => {
+  console.log(props) // {test: 123}
+  return <div>子组件 {props.test}</div>
+}
+```
