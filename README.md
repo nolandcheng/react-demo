@@ -122,7 +122,7 @@ const App = () => {
   return <div>一个函数式组件</div>
 }
 
-// root根元素的创建之后不在赘述
+// root根元素的创建，之后不在赘述
 const root = ReactDOM.createRoot(document.getElememtById("root"))
 
 root.render(<App />)
@@ -143,6 +143,8 @@ class App extends React.Component {
 
 #### 5.3 props
 
+props 只读无法修改
+
 ```js
 // 父组件
 const parent = () => {
@@ -154,4 +156,35 @@ const children = (props) => {
   console.log(props) // {test: 123}
   return <div>子组件 {props.test}</div>
 }
+```
+
+> _与 Vue 中的 props 父传子一致_
+
+#### 5.4 state
+
+在 React 中，组件渲染完后再修改普通的变量，不会重新渲染，我们可以通过将数据存储在 state 变量中来解决这个问题。
+
+state 只属于当前组件，其他组件无法访问，并且是会被 React 监测，修改数据后会自动重新渲染组件。
+
+```js
+// 引入钩子函数来创建state
+import { useState } from "React"
+
+// useState的参数可以传入一个初始值，该函数返回一个由初始值和修改方法组成的数组
+const [value, setValue] = useState(1)
+
+// value仅用来显示，不能直接修改，需调用setValue方法传入新值来修改，并会异步重新渲染组件
+setValue(2)
+console.log(value) // 2
+```
+
+`setState()`并不会修改旧值，而是重新传入新值。
+
+如果传入的新值用到了旧值，因为是异步渲染的，我们应该使用回掉函数来避免任务队列被抵消的问题。
+
+```js
+// 将
+setValue(value + 1)
+// 替换为
+setValue((preValue) => preValue + 1)
 ```
