@@ -143,20 +143,24 @@ class App extends React.Component {
 
 ### 5.3 `props`
 
-`props` 只读无法修改
+`props` 控制父子组件间的通信，它只读无法修改，子组件想要修改父组件数据也要通过`props`去调用父组件的方法。
 
 `props.children`：标签体
 `props.className`: 父组件 class
 
 ```js
 // 父组件
+const changeTestHandler = (str) => {
+  console.log(str) // 456
+}
 const parent = () => {
-  return <children test="123" />
+  return <children test="123" onChangeTest={changeTestHandler} />
 }
 
 // 子组件
 const children = (props) => {
   console.log(props) // {test: 123}
+  props.onChangeTest(456) // 调用父组件方法并传递参数
   return <div>子组件 {props.test}</div>
 }
 
@@ -164,7 +168,7 @@ const children = (props) => {
 console.log(this.props.test)
 ```
 
-> _与 Vue 中的 `props` 父传子基本一致_
+> _与 Vue 中的 `props` 父传子基本一致，子传父则不太一样_，
 
 ## 6 钩子函数
 
