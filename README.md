@@ -34,7 +34,7 @@
 3.yarn start
 ```
 
-### 3. Hello World
+## 3. Hello World
 
 简单的使用 React 元素（虚拟 DOM）的例子，命令式编程。
 
@@ -71,7 +71,7 @@ root.render(button)
 > `ReactDOM.render(button, document.getElememtById("root"))`
 > 老版本（React17 及以下）的使用方式
 
-### 4. JSX
+## 4. JSX
 
 JSX 是一种 JS 的语法扩展，它可以让我们在 JS 中书写一种类似 HTML 的标签，是`React.createElement()`的语法糖，由于其简洁性，在 React 组件开发中广泛存在。
 
@@ -112,9 +112,9 @@ const list = (
 
 在实际开发中，大量的 js 文件来导入导出十分繁琐，Vue 有提供专门的单文件组件`.vue`，React 我们也需要更简洁的方案：一个以`.jsx` 结尾的文件。
 
-### 5. 组件
+## 5. 组件
 
-#### 5.1 函数式组件
+### 5.1 函数式组件
 
 ```js
 // 组件首字母必须大写
@@ -128,7 +128,7 @@ const root = ReactDOM.createRoot(document.getElememtById("root"))
 root.render(<App />)
 ```
 
-#### 5.2 类组件
+### 5.2 类组件
 
 ```js
 // 必须继承React.Component
@@ -141,9 +141,12 @@ class App extends React.Component {
 
 无论是那种组件，都要返回一个 `jsx`，通常而言，使用函数式组件更多。
 
-#### 5.3 props
+### 5.3 `props`
 
-props 只读无法修改
+`props` 只读无法修改
+
+`props.children`：标签体
+`props.className`: 父组件 class
 
 ```js
 // 父组件
@@ -156,11 +159,18 @@ const children = (props) => {
   console.log(props) // {test: 123}
   return <div>子组件 {props.test}</div>
 }
+
+// 类组件则直接通过实例访问
+console.log(this.props.test)
 ```
 
-> _与 Vue 中的 props 父传子一致_
+> _与 Vue 中的 `props` 父传子基本一致_
 
-#### 5.4 state
+## 6 钩子函数
+
+钩子函数只能在函数式组件或自定义钩子中使用
+
+### 6.1 `useState()`
 
 在 React 中，组件渲染完后再修改普通的变量，不会重新渲染，我们可以通过将数据存储在 state 变量中来解决这个问题。
 
@@ -187,4 +197,44 @@ console.log(value) // 2
 setValue(value + 1)
 // 替换为
 setValue((preValue) => preValue + 1)
+```
+
+在类组件中，`state` 和 `setState()` 统一存储到了实例中
+
+```js
+state = {
+  count: 0,
+}
+this.setState((preValue) => {
+  return {
+    count: preValue + 1,
+  }
+})
+```
+
+### 6.2 `useRef()`
+
+```js
+// 引入钩子函数
+import { useRef } from "React"
+
+// 创建一个存储DOM对象的容器，会匹配标有ref属性h1Ref值的元素
+const h1Ref = useRef()
+
+// 二者相同
+console.log(h1Ref.current)
+console.log(document.getElementById("header"))
+
+const App = () => {
+  return <h1 id="header" ref={h1Ref}></h1>
+}
+```
+
+`useRef()`创建的对象，可以确保每次渲染获取到的都是同一个对象
+
+在类组件中使用`creatRef()`
+
+```js
+divRef = React.creatRef()
+console.log(this.divRef.current)
 ```
