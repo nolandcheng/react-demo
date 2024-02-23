@@ -26,7 +26,9 @@
 3.npx react-scripts start -- 运行
 ```
 
-使用 `create react-app` 可以在不安装全局`create-react-app`的情况下创建 React 项目，React（**当前版本 18.2**） 项目是基于 webpack 配置的。
+使用 `create react-app` 创建 React 项目，它会自动在全局安装 React 官方的基于 `webpack` 配置的脚手架 `create-react-app`。
+
+React 当前版本 **18.2**
 
 ```sql
 1.yarn create react-app my-react
@@ -73,7 +75,7 @@ root.render(button)
 
 ## 4. JSX
 
-JSX 是一种 JS 的语法扩展，它可以让我们在 JS 中书写一种类似 HTML 的标签，是`React.createElement()`的语法糖，由于其简洁性，在 React 组件开发中广泛存在。
+JSX 是一种 JS 的语法扩展，它可以让我们在 JS 中书写一种类似 HTML 的标签，它是`React.createElement()`的语法糖，由于其简洁性，在 React 组件开发中广泛存在。
 
 JSX 语法需要遵循 3 个规则：
 
@@ -93,13 +95,17 @@ JSX 语法需要遵循 3 个规则：
 const data = [1, 2, 3]
 
 const list = (
-  <ul className="ul" style={{ backgroundColor: "red" }}>
-    {data.map((item, index) => (
-      <li key={index} onClick={() => alert(123)}>
-        {item}
-      </li>
-    ))}
-  </ul>
+  // 有些场景需要使用Fragment来包裹所有元素，但它并不会实际创建一个DOM元素
+  // 也可以直接使用<></>空标签
+  <React.Fragment>
+    <ul className="ul" style={{ backgroundColor: "red" }}>
+      {data.map((item, index) => (
+        <li key={index} onClick={() => alert(123)}>
+          {item}
+        </li>
+      ))}
+    </ul>
+  </React.Fragment>
 )
 ```
 
@@ -143,7 +149,7 @@ class App extends React.Component {
 
 ### 5.3 `props`
 
-`props` 控制父子组件间的通信，它只读无法修改，子组件想要修改父组件数据也要通过`props`去调用父组件的方法。
+`props` 控制父子组件间的通信，它只读无法修改，子组件想要修改父组件数据也要通过`props`来调用父组件传递过来的回掉函数。
 
 `props.children`：标签体
 `props.className`: 父组件 class
@@ -242,3 +248,37 @@ const App = () => {
 divRef = React.creatRef()
 console.log(this.divRef.current)
 ```
+
+## 7. portal
+
+解决组件会默认作为父组件的后代渲染到页面上的一种方案，`portal`可以指定组件渲染的位置
+
+```js
+import ReactDom from "react-dom"
+
+// 在需要被渲染的元素处添加标识，如id="box"
+const App = () => {
+  return <div id="box"></div>
+}
+
+// 在组件中获取box元素
+const box = document.getElementById("box")
+
+// 使用portal将当前组件传递到box元素中
+const myComp = (props) => {
+  return ReactDom.createPortal(<div className="comp">{props.children}</div>, box)
+}
+
+export default myComp
+```
+
+## 8. CSS Module
+
+为解决项目中同名样式冲突的问题（即作用域隔离），React 提供了 CSS Module 的解决方案。
+
+一个简单的例子：
+
+1. 创建 [App.module.css](./src/App.module.css)
+2. 在组件中引入并以对象属性的方式设置为`ClassName` [App.js](./src/App.js)
+
+> _在 Vue 中为 style 提供有 scoped 属性，设置后可以直接在组件中拥有样式的作用域_
