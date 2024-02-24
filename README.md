@@ -176,7 +176,18 @@ console.log(this.props.test)
 
 > _与 Vue 中的 `props` 父传子基本一致，子传父则不太一样_，
 
-## 6 钩子函数
+### 5.4 CSS Module
+
+为解决项目中同名样式冲突的问题（即作用域隔离），React 提供了 CSS Module 的解决方案。
+
+一个简单的例子：
+
+1. 创建 [App.module.css](./src/App.module.css)
+2. 在组件中引入并以对象属性的方式设置为`ClassName` [App.js](./src/App.js)
+
+> _在 Vue 中为 style 提供有 scoped 属性，设置后可以直接在组件中拥有样式的作用域_
+
+## 6. 钩子函数
 
 钩子函数只能在函数式组件或自定义钩子中使用
 
@@ -272,13 +283,78 @@ const myComp = (props) => {
 export default myComp
 ```
 
-## 8. CSS Module
+## 8. Context
 
-为解决项目中同名样式冲突的问题（即作用域隔离），React 提供了 CSS Module 的解决方案。
+Context 是用来解决 props 只能一层一层传递数据的方案，它类似于一个 JS 全局作用域，我们在外层组件设置 Context 来储存一些公共数据后，其所有组件都可以访问。
 
-一个简单的例子：
+Context 通常都放在一个 store 文件中。
 
-1. 创建 [App.module.css](./src/App.module.css)
-2. 在组件中引入并以对象属性的方式设置为`ClassName` [App.js](./src/App.js)
+```js
+// 新建一个TestContext.js文件
+import React from "reaxt"
 
-> _在 Vue 中为 style 提供有 scoped 属性，设置后可以直接在组件中拥有样式的作用域_
+const TestContext = React.createContext({
+  name: "姓名",
+  age: 18,
+})
+
+export default TestContext
+
+// 在组件中引入TestContext.js
+import TestContext from "../store/TestContext.js"
+
+// 方法A（不推荐）: 使用Context自带的Consumer属性，传入回调函数，该函数的参数即为TestContext
+const A = () => {
+  return (
+    // Consumer消费者
+    <TestContext.Consumer>
+      {(ctx) => {
+        return (
+          <div>
+            {ctx.name} - {ctx.age}
+            {/* 姓名 - 18 */}
+          </div>
+        )
+      }}
+    </TestContext.Consumer>
+  )
+}
+
+// 方法B：
+const B = () => {
+  // 使用钩子函数useContext()，传入TestContext来获取数据
+  const ctx = useContext(TestContext)
+  return (
+    <div>
+      {ctx.name} - {ctx.age}
+      {/* 姓名 - 18 */}
+    </div>
+  )
+}
+```
+
+在实际开发中，我们需要定义动态的数据，如下使用：
+
+```js
+// 在父组件中定义数据，在TestContext中仅保留数据名
+const [valueData, setValueData] = useState({
+  name: "姓名",
+  age: 18,
+})
+
+// 使用Context自带的Provider属性来包裹组件，定义value值，后代组件均可访问该值
+const C = () => {
+  return (
+    // Provider生产者
+    <TestContext.Provider value={valueData}>
+      {/* 多层Provider采用就近原则 */}
+      <div>
+        {ctx.name} - {ctx.age}
+        {/* 姓名 - 18 */}
+      </div>
+    </TestContext.Provider>
+  )
+}
+```
+
+> _Vue 中有 vuex 和 pina 插件来解决跨组件传输的问题，Context 相对而言还是要麻烦许多_
