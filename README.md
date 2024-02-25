@@ -233,6 +233,13 @@ this.setState((preValue) => {
 })
 ```
 
+#### setState 的执行流程
+
+setState 调用的 ReactDom 的底层方法 `dispatchSetDate()`，该方法会先判断组件处于的阶段。
+
+- 在渲染阶段并不会检查 state 的值是否相同。
+- 其他阶段才会检查，不同则会重新渲染，有时相同也会重新渲染（第一次用相同值调用时）。
+
 ### 6.2 `useRef()`
 
 ```js
@@ -258,6 +265,18 @@ const App = () => {
 ```js
 divRef = React.creatRef()
 console.log(this.divRef.current)
+```
+
+### 6.3 `useEffect()`
+
+React 项目通常会自动启用 React 的严格模式`React.StrictMode`，在开发模式下，它会自动重复调用一些函数以触发副作用，这样可以发现我们写的代码陷入各种重新渲染的死循环。
+
+> Too many re-renders: 在函数体调用 setState 时会出现的错误
+
+因此为了解决我们在项目中会遇到的重新渲染问题，我们需要使用`useEffect()`这个钩子函数来处理那些不能直接写在组件内的代码。
+
+```js
+
 ```
 
 ## 7. portal
