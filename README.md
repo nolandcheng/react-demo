@@ -233,11 +233,11 @@ this.setState((preValue) => {
 })
 ```
 
-#### setState 的执行流程
+#### `setState()` 的执行流程
 
-setState 调用的 ReactDom 的底层方法 `dispatchSetDate()`，该方法会先判断组件处于的阶段。
+`setState()` 调用的 ReactDom 的底层方法 `dispatchSetDate()`，该方法会先判断组件处于的阶段。
 
-- 在渲染阶段并不会检查 state 的值是否相同。
+- 在渲染阶段并不会检查 `state` 的值是否相同。
 - 其他阶段才会检查，不同则会重新渲染，有时相同也会重新渲染（第一次用相同值调用时）。
 
 ### 6.2 `useRef()`
@@ -271,12 +271,42 @@ console.log(this.divRef.current)
 
 React 项目通常会自动启用 React 的严格模式`React.StrictMode`，在开发模式下，它会自动重复调用一些函数以触发副作用，这样可以发现我们写的代码陷入各种重新渲染的死循环。
 
-> Too many re-renders: 在函数体调用 setState 时会出现的错误
+> Too many re-renders: 在函数体调用 `setState()` 时会出现的错误
 
-因此为了解决我们在项目中会遇到的重新渲染问题，我们需要使用`useEffect()`这个钩子函数来处理那些不能直接写在组件内的代码。
+因此为了解决我们在项目中会遇到的重新渲染问题，我们可以使用`setTimeout()`这类异步任务，也可以使用`useEffect()`这个钩子函数来处理那些不能直接写在组件内的代码。
+
+意为`在组件渲染完毕后执行`
 
 ```js
+useEffect(() => {
+  // ……
+}, [])
+```
 
+> _Vue 提供有 `nextTick()`方法来达到同样的效果_
+
+`useEffect()`默认每次渲染都会执行，我们可以传递一个数组来作为第二个参数，这个数组可以用来指定依赖项，只有当依赖项发生变化时，`useEffect()`才会执行。
+
+`setState()` 无需设置为依赖项，因为`useState()`每次渲染都能保证是同一个 `setState()`
+
+#### 清理函数
+
+可以为 Effect 的回调函数中指定一个函数为返回值，这个函数即是清理函数。
+
+清理函数会在下次 Effect 执行前调用，所以我们可以在其中清除上次 Effect 执行的影响。
+
+可以用它来实现**防抖**，在规定时间内触发多次同一事件，仅执行最后一次。
+
+```js
+useEffect(() => {
+  const timer = setTimeout(() => {
+    console.log("执行了")
+  }, 1000)
+  // 1秒内每次触发都会清除上一个定时器
+  return () => {
+    clearTimeout(timer)
+  }
+}, [])
 ```
 
 ## 7. portal
