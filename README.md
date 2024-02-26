@@ -187,6 +187,22 @@ console.log(this.props.test)
 
 > _在 Vue 中为 style 提供有 scoped 属性，设置后可以直接在组件中拥有样式的作用域_
 
+### 5.5 `React.memo()`
+
+当父组件触发重新渲染的时候，子组件也总是会触发重新渲染，但有时候我们并不希望一个简单的或并不依赖父组件的子组件总是进行重新渲染，这时我们可以使用`React.memo()`这个函数。
+
+`React.memo()`是一个高阶组件，接收一个组件为参数并返回一个包装后的组件，包装后的组件具有缓存功能，只有当该组件的`props`发生变化时才会重新渲染。
+
+```js
+const A = () => {
+  return <div>一个很简单的组件</div>
+}
+
+export default React.memo(A)
+```
+
+> _Vue 中可以为 template 设置 function 来达成相同的效果_
+
 ## 6. 钩子函数
 
 钩子函数只能在函数式组件或自定义钩子中使用
@@ -240,7 +256,25 @@ this.setState((preValue) => {
 - 在渲染阶段并不会检查 `state` 的值是否相同。
 - 其他阶段才会检查，不同则会重新渲染，有时相同也会重新渲染（第一次用相同值调用时）。
 
-### 6.2 `useRef()`
+### 6.2 `useReducer()`
+
+`useReducer()`的作用是用来整合`state`和`useState()`的，以减少其复杂性，当我们需要创建一个方法较多的`state`时，这很有用。
+
+```js
+// 调用countDispath()方法会执行useReducer()传入的第一个回调函数
+// useReducer()的第二个参数定义的是count的初始值
+const [count, countDispatch] = useReducer((state, acticon) => {
+  // state即为count值
+  // acticon为调用countDispatch传入的参数，无则为undefined
+  return state + 1
+  // 需要保证执行逻辑后一定要return，否则count会变为undefined
+  // return state
+}, 1)
+```
+
+需要注意的是，为了避免`useReducer()`每次渲染都会被重新定义，我们应当将它**定义到组件外部**
+
+### 6.3 `useRef()`
 
 ```js
 // 引入钩子函数
@@ -267,7 +301,7 @@ divRef = React.creatRef()
 console.log(this.divRef.current)
 ```
 
-### 6.3 `useEffect()`
+### 6.4 `useEffect()`
 
 React 项目通常会自动启用 React 的严格模式`React.StrictMode`，在开发模式下，它会自动重复调用一些函数以触发副作用，这样可以发现我们写的代码陷入各种重新渲染的死循环。
 
@@ -306,6 +340,18 @@ useEffect(() => {
   return () => {
     clearTimeout(timer)
   }
+}, [])
+```
+
+### 6.5 `useCallback()`
+
+组件进行重新渲染时，组件内的函数总是会重新创建，当我们希望能控制该函数的创建，就可以使用`useCallback()`方法。
+
+```js
+// useCallback()的第一个参数为我们绑定的回调函数
+// useCallback()的第二参数为依赖项，只有当依赖项变化时，回调函数才会重新传教
+const clickHandler = useCallback(() => {
+  // ...
 }, [])
 ```
 
