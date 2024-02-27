@@ -453,3 +453,29 @@ const C = () => {
 ```
 
 > _Vue 中有 vuex 和 pina 插件来解决跨组件传输的问题，Context 相对而言还是要麻烦许多_
+
+## 9. hooks（自定义钩子）
+
+hooks 意为可以调用其它钩子函数的钩子函数，但它实际上只是一个普通的函数，但定义时需要用 use 开头。
+
+hooks 的作用很好理解，我们可以将会在许多组件用到的`state`和函数都定义到某个 hooks 中去，并在该 hooks 中进行暴露，随后在需要用的组件中引入即可。
+
+```js
+export default function useTest(res) {
+  const [data, setData] = useState(res.data)
+  const [loading, setLoading] = useState(res.loading)
+  // ……
+  return {
+    data,
+    loading,
+  }
+}
+
+import useTest from "./useTest"
+const { data, loading } = useTest({
+  data: [],
+  loading: false,
+})
+```
+
+> _Vue2 中有 mixins（混入）来解决重复代码的问题，但在 Vue3 中被逐渐废弃了，并且 Vue3 中也引入了 hooks 的概念，简洁且优雅，这应该是短期内最好的方案了_
