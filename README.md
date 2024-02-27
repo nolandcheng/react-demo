@@ -209,9 +209,9 @@ export default React.memo(A)
 
 ### 6.1 `useState()`
 
-在 React 中，组件渲染完后再修改普通的变量，不会重新渲染，我们可以通过将数据存储在 state 变量中来解决这个问题。
+在 React 中，组件渲染完后再修改普通的变量，不会重新渲染，我们可以通过将数据存储在`state`变量中来解决这个问题。
 
-state 只属于当前组件，其他组件无法访问，并且是会被 React 监测，修改数据后会自动重新渲染组件。
+`state`只属于当前组件，其他组件无法访问，并且是会被 React 监测，修改数据后会自动重新渲染组件。
 
 ```js
 // 引入钩子函数来创建state
@@ -249,11 +249,11 @@ this.setState((preValue) => {
 })
 ```
 
-#### `setState()` 的执行流程
+#### `setState()`的执行流程
 
-`setState()` 调用的 ReactDom 的底层方法 `dispatchSetDate()`，该方法会先判断组件处于的阶段。
+`setState()`调用的 ReactDom 的底层方法`dispatchSetDate()`，该方法会先判断组件处于的阶段。
 
-- 在渲染阶段并不会检查 `state` 的值是否相同。
+- 在渲染阶段并不会检查`state`的值是否相同。
 - 其他阶段才会检查，不同则会重新渲染，有时相同也会重新渲染（第一次用相同值调用时）。
 
 ### 6.2 `useReducer()`
@@ -452,7 +452,7 @@ const C = () => {
 }
 ```
 
-> _Vue 中有 vuex 和 pina 插件来解决跨组件传输的问题，Context 相对而言还是要麻烦许多_
+> _Context 这种通信方式有点类似于 Vue 中的 bus 模式，不太适用于大型复杂应用。_
 
 ## 9. hooks（自定义钩子）
 
@@ -479,3 +479,9 @@ const { data, loading } = useTest({
 ```
 
 > _Vue2 中有 mixins（混入）来解决重复代码的问题，但在 Vue3 中被逐渐废弃了，并且 Vue3 中也引入了 hooks 的概念，简洁且优雅，这应该是短期内最好的方案了_
+
+## 10. Redux
+
+Redux 时一个专为 JS 应用设计的可预期的状态管理器，并不专属于 React。`useState`只能在当前组件定义和管理`state`，Context 也只能进行简单的跨组件通信，而 Redux 可以进行全局通信，功能更全面，能适应更复杂的需求。
+
+使用 Redux 来管理`state`，外部无法直接修改`state`，只能通过 Redux 提供的方法来操作。
