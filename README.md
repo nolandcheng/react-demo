@@ -485,3 +485,54 @@ const { data, loading } = useTest({
 Redux 时一个专为 JS 应用设计的可预期的状态管理器，并不专属于 React。`useState`只能在当前组件定义和管理`state`，Context 也只能进行简单的跨组件通信，而 Redux 可以进行全局通信，功能更全面，能适应更复杂的需求。
 
 使用 Redux 来管理`state`，外部无法直接修改`state`，只能通过 Redux 提供的方法来操作。
+
+```js
+// 声明一个修改state的函数，返回state的新值
+const reducer = (state, action) => {
+  return state + action
+}
+
+// 定义store，并传递回调函数和初始值
+const store = Redux.createStore(reducer, 1)
+
+// 使用subscribe定义state变化时的操作
+store.subscribe(() => {
+  console.log(store.getState())
+})
+
+// 派发，事件处罚时执行store提供的方法
+store.dispatch(1)
+```
+
+但在 React 中，官方推荐我们直接引入 Redux 工具包：RTK（Redux Toolkit），以简化仅安装 Redux 核心包后的操作
+
+```sql
+yarn add react-redux @reduxjs/toolkit
+```
+
+创建一个[store](src/store/index.js)
+
+随后在[入口文件](./src/index.js)中引入，并使用`<Provider store={store}></Provider>`包裹`<App />`组件
+
+在任意组件中获取`store`中的信息和方法
+
+```js
+import { useSelector, useDispatch } from "react-redux"
+import { setName } from "./store"
+
+// 获取state对象 {name: '人', age: 18}
+const testData = useSelector((state) => state.test)
+
+// 获取派发器的对象
+const dispatch = useDispatch()
+
+// 在事件中调用
+const setNameHandler = () => {
+  // 1.可以引入我们在store暴露的修改方法，直接调用
+  dispatch(setName("狗"))
+  // 2.不额外引入方法，按照action规定格式调用
+  dispatch({ type: "test/setName", payload: "狗" })
+}
+```
+
+> _与 Vue 中的 Vuex 插件类似_
