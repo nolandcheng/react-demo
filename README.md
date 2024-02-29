@@ -504,6 +504,10 @@ store.subscribe(() => {
 store.dispatch(1)
 ```
 
+> _与 Vue 中的 Vuex 插件类似_
+
+### RTK
+
 但在 React 中，官方推荐我们直接引入 Redux 工具包：RTK（Redux Toolkit），以简化仅安装 Redux 核心包后的操作
 
 ```sql
@@ -535,4 +539,32 @@ const setNameHandler = () => {
 }
 ```
 
-> _与 Vue 中的 Vuex 插件类似_
+### RTKQ
+
+RTK Query，专门用来处理数据加载和缓存的情况，RTKQ 已经存在于 RTK 包中了，无需额外引入。
+
+创建一个[Api 对象](./src/store/indexApi.js)
+
+需要将该 Api 对象配置到`store`的`Reducer`中，[store](src/store/index.js)
+
+随后在任意组件中调用 Api 对象生成的钩子函数
+
+```js
+import { useGetXxxQuery } from "./store/indexApi.js"
+
+// 调用后会返回一个对象，它包含请求过程中的所有数据
+const result = useGetXxxQuery(null, {
+  // 传对象为第二参数，可以进行请求的配置
+  selectFromResult: (res) => res, // 指定返回结果
+  pollingInterval: 0, //设置轮询间隔，单位毫米，默认0不轮询
+  skip: false, // 是否跳过请求，默认否
+  refetchOnMountOrArgChange: false, // 是否每次都重新加载数据，默认false正常使用缓存，也可以指定数字缓存时间（秒）
+  refetchOnFocus: false, // 是否重新获取焦点时加载数据
+  refetchOnReconnect: false, // 是否重新连接后加载数据
+})
+
+const { data, isSuccess, isFetching, refetch } = result
+// refetch: 重新加载的函数
+```
+
+实际体验下来感觉这种封装还是烦琐了许多。

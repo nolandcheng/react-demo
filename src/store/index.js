@@ -1,4 +1,6 @@
 import { configureStore, createSlice } from "@reduxjs/toolkit"
+import xxxApi from "./indexApi"
+import { setupListeners } from "@reduxjs/toolkit/query"
 
 // 创建一个Reducer切片，以区分复杂业务，多个切片组合成一个Reducer
 const testSlice = createSlice({
@@ -24,8 +26,17 @@ export const { setName } = testSlice.actions
 // 创建一个store对象
 const store = configureStore({
   reducer: {
+    // 配置两种Reducer
     test: testSlice.reducer,
+    [xxxApi.reducerPath]: xxxApi.reducer,
+  },
+  // 中间件，缓存
+  middleware: (getDefaultMiddleware) => {
+    getDefaultMiddleware.concat(xxxApi.middleware)
   },
 })
+
+// 设置监听器，支持refetchOnFocus和refetchOnReconnect
+setupListeners(store.dispatch)
 
 export default store
