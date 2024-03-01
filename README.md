@@ -571,3 +571,162 @@ const { data, isSuccess, isFetching, refetch } = result
 ```
 
 实际体验下来感觉可以定义的非常细致，但这种封装还是烦琐了许多。
+
+## 11. React-ruoter
+
+现代化 JS 框架通常都是单页应用（SPA），它们实际上只有一个页面，且只会进行浏览器的首页加载，但随着项目复杂度的提升，我们必然是需要多页面来承载更多的细化页面的，因此对于 React 而言，React-ruoter 就诞生了。
+
+React-ruoter 能将 React 组件和浏览器 URL 地址映射起来，地址的变化不由服务器处理，而是由客户端处理。
+
+> _Vue 也有 Vue-router 这样的工具_。
+
+安装 React-router
+
+```sql
+-- web项目
+yarn add react-router-dom
+
+-- native项目
+yarn add react-router-native
+```
+
+引入`react-router-dom`包的`BrowserRouter`或者`HashRouter`组件，随后包裹根标签即可。
+
+- `HashRouter`会为 URL 地址添加#，并根据这个 hash 值来匹配。
+- `BrowserRouter` 直接通过 URL 地址进行跳转。
+
+开发环境这两者没有区别，但是在将项目部署到服务器上后，就会有区别。
+
+> BrowserRouter 下的 React 应用，在服务器上通过刷新和跳转操作因为没有经过 react-router，所以会报 404，只能通过修改为 HashRouter 或更改服务器配置（将请求转发到 index.html）来解决。
+
+修改`nginx.conf`的例子:
+
+```sql
+location / {
+  root html
+  # index index.html index.htm;
+  try_files $uri /index.html;
+}
+```
+
+### Route V5
+
+在页面上的应用：
+
+- 使用`Route`指定路由组件
+- 使用`Link`创建超链接
+- 使用`NavLink`也可以创建超链接，且可以额外定义样式
+
+```js
+import { Route } from "react-router-dom"
+import Home from "xxx"
+
+function App(props) {
+  return (
+    <div>
+      {/* exact: 路径是否完整匹配，默认false
+       * path: 路径地址
+       * component: 挂载组件
+       */}
+      <Route exact path="/" component={Home} />
+      {/* render方式可以传递回掉函数，来自由定义传参routeProps{match、location、history} */}
+      <Route
+        path="/"
+        render={(routeProps) => {
+          return <Home />
+        }}
+      />
+      {/* children方式与render类似，但它设置了回掉函数后必定被挂载，否则会报错 */}
+      <Route
+        path="/"
+        children={(routeProps) => {
+          return <Home />
+        }}
+      />
+      {/* 也可以直接使用标签体的方式 */}
+      <Route path="/">
+        <Home />
+      </Route>
+
+      <Route path="/">{(routeProps) => <Home {...routeProps} />}</Route>
+    </div>
+  )
+}
+```
+
+```js
+import { Link, NavLink, useRouteMatch, useLocation, useHistory, useParams } from "react-router-dom"
+
+const Home = (props) => {
+  // component方式可以通过props获取路由信息
+  const clickHandler = () => {
+    // porps.history 主动调用跳转
+    props.history.push({ pathName: "/", state: { name: "" } })
+  }
+
+  // 函数方式可以通过钩子函数获取路由信息
+  const match = useRouteMatch()
+  const location = useLocation()
+  const history = useHistory()
+  const params = useParams()
+
+  return (
+    <div>
+      <Link to="/"></Link>
+      <NavLink exact activeClassName={"test"} activeStyle={{ color: "red" }} to="/"></NavLink>
+    </div>
+  )
+}
+```
+
+### Route V6
+
+相比于 V5 的变化：
+
+1. 必须用`Routs`组件包裹`Route`组件
+2. `Route`上的`component、render、children`被`element`取代
+3. 钩子函数去除`useRouteMatch、useHistory`，新增`useMatch、useNavigate`
+4. 添加`OutLet`组件以支持嵌套路由
+5. `NavLink`组件的`activeClassName、activeStyle`属性支持回调函数
+
+```js
+import { Routes, Route } from "react-router-dom"
+import Home from "xxx"
+import About from "yyy"
+
+const App = () => {
+  return (
+    <div>
+      <Routes>
+        <Route path="/" element={<Home />}>
+          {/* 嵌套路由 */}
+          <Route path="/" element={<About />}></Route>
+        </Route>
+      </Routes>
+    </div>
+  )
+}
+```
+
+```js
+import { Navigate, OutLet, useMatch, useNavigate } from "react-router-dom"
+
+// 检查当前路由地址和'/'是否匹配，匹配则返回当前路由，否则返回null
+const match = useMatch("/")
+
+// 页面跳转
+const nav = useNavigate()
+// nav("/")
+// nav("/", { replace: true })
+
+const Home = () => {
+  return (
+    <div>
+      {/* Navigate组件默认push跳转 */}
+      <Navigate to="/" replace />
+      {/* OutLet显示嵌套路由中匹配的路由组件 */}
+      <OutLet />
+    </div>
+  )
+}
+```

@@ -1,4 +1,4 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/dist/query/react"
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react"
 
 // 创建一个Api对象
 const xxxApi = createApi({

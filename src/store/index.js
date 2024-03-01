@@ -31,9 +31,11 @@ const store = configureStore({
     [xxxApi.reducerPath]: xxxApi.reducer,
   },
   // 中间件，缓存
-  middleware: (getDefaultMiddleware) => {
-    getDefaultMiddleware.concat(xxxApi.middleware)
-  },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      //关闭redux序列化检测
+      serializableCheck: false,
+    }),
 })
 
 // 设置监听器，支持refetchOnFocus和refetchOnReconnect
