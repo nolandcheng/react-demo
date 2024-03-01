@@ -7,10 +7,12 @@ const xxxApi = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: "http://xxx/",
   }),
+  tagTypes: ["xxx"], // Api中的标签类型
   // 方法，指定Api的各种功能，返回一个对象
   endpoints(build) {
     // build是请求的构建器，通过build来设置相关信息
     return {
+      // build.query 通常是查询数据
       getXxx: build.query({
         query(id) {
           // 指定子路径，调用Api时会拼接baseUrl
@@ -21,7 +23,21 @@ const xxxApi = createApi({
           return baseQueryReturnValue
         },
         // 设置缓存时间，单位秒，0为不缓存，默认60s
-        keepUnusedDataFor: 0,
+        keepUnusedDataFor: 60,
+        // 标记标签
+        providesTags: (result, error, id) => [{ type: "xxx", id }],
+      }),
+      // build.mutation 通常是操作数据
+      delXxx: build.mutation({
+        query(id) {
+          return {
+            url: "xxx" + id,
+            method: "delete", // post等
+            body: {}, // 新值修改有，删除可能没用
+          }
+        },
+        // 触发标签，调用该接口后，标记有此标签的接口会自动触发
+        invalidatesTags: (result, error, id) => [{ type: "xxx", id }],
       }),
     }
   },
@@ -29,5 +45,5 @@ const xxxApi = createApi({
 
 // Api对象创建后，会根据endpoints返回的方法生成各个钩子函数
 // 钩子函数命名规则：getXxx => useGetXxxQuery
-export const { useGetXxxQuery } = xxxApi
+export const { useGetXxxQuery, useDelXxxMutation } = xxxApi
 export default xxxApi

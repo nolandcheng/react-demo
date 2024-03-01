@@ -550,7 +550,7 @@ RTK Query，专门用来处理数据加载和缓存的情况，RTKQ 已经存在
 随后在任意组件中调用 Api 对象生成的钩子函数
 
 ```js
-import { useGetXxxQuery } from "./store/indexApi.js"
+import { useGetXxxQuery, useDelXxxMutation } from "./store/indexApi.js"
 
 // 调用后会返回一个对象，它包含请求过程中的所有数据
 const result = useGetXxxQuery(null, {
@@ -563,8 +563,11 @@ const result = useGetXxxQuery(null, {
   refetchOnReconnect: false, // 是否重新连接后加载数据
 })
 
+// 调用后返回的是一个数组，分布是触发器和结果集
+const [delXxx, result2] = useDelXxxMutation()
+
 const { data, isSuccess, isFetching, refetch } = result
 // refetch: 重新加载的函数
 ```
 
-实际体验下来感觉这种封装还是烦琐了许多。
+实际体验下来感觉可以定义的非常细致，但这种封装还是烦琐了许多。
