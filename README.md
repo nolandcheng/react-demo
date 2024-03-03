@@ -1,6 +1,6 @@
 # React Demo
 
-这是一个 React 全家桶的 demo 项目， React 是老牌的 js 框架，许多特点在 Vue3 中也能看到它的影子，我希望我能更加熟悉它。
+这是一个 React 全家桶的 demo 项目，它更多的是记录我学习 React 的笔记和一些小的练习。
 
 版本：React18
 与 Vue 的比较：文中的引用结合倾斜文本记录
@@ -116,7 +116,7 @@ const list = (
 1. React 函数中，`return false` 无效
 2. 函数会携带 React 包装后的事件对象。
 
-在实际开发中，大量的 js 文件来导入导出十分繁琐，Vue 有提供专门的单文件组件`.vue`，React 我们也需要更简洁的方案：一个以`.jsx` 结尾的文件。
+<!-- 在实际开发中，大量的 js 文件来导入导出十分繁琐，Vue 有提供专门的单文件组件`.vue`，React 我们也需要更简洁的方案：一个以`.jsx` 结尾的文件。 -->
 
 ## 5. 组件
 
@@ -191,7 +191,7 @@ console.log(this.props.test)
 
 当父组件触发重新渲染的时候，子组件也总是会触发重新渲染，但有时候我们并不希望一个简单的或并不依赖父组件的子组件总是进行重新渲染，这时我们可以使用`React.memo()`这个函数。
 
-`React.memo()`是一个高阶组件，接收一个组件为参数并返回一个包装后的组件，包装后的组件具有缓存功能，只有当该组件的`props`发生变化时才会重新渲染。
+`React.memo()`是一个高阶函数，接收一个组件为参数并返回一个包装后的组件，包装后的组件具有缓存功能，只有当该组件的`props`发生变化时才会重新渲染。
 
 ```js
 const A = () => {
@@ -203,9 +203,9 @@ export default React.memo(A)
 
 > _Vue 中可以为 template 设置 function 来达成相同的效果_
 
-## 6. 钩子函数
+## 6. 钩子函数（hook）
 
-钩子函数只能在函数式组件或自定义钩子中使用
+钩子函数只能在函数式组件或自定义钩子中直接使用
 
 ### 6.1 `useState()`
 
@@ -301,7 +301,55 @@ divRef = React.creatRef()
 console.log(this.divRef.current)
 ```
 
-### 6.4 `useEffect()`
+### 6.4 `useImperativeHandle()`
+
+`useRef`可以获取 html 元素的 DOM 对象，但无法直接获取子组件的 DOM 对象，虽然有`forwardRef()`可以在子组件标记 ref 来获取，但这种增加耦合的方式并不推荐。
+
+`useImperativeHandle()`能够手动控制要返回给父组件对象和方法，更易于观察和维护。
+
+```js
+// 父组件
+const App = () => {
+  const homeRef = useRef()
+
+  useEffect(() => {
+    console.log(homeRef.current)
+    homeRef.current.changeInput(1)
+  })
+
+  return (
+    <div>
+      <Home ref={homeRef} />
+    </div>
+  )
+}
+```
+
+```js
+// 子组件 React.forwardRef用来指定组件向外暴露的ref
+const Home = React.forwardRef((props, ref) => {
+  const inputRef = useRef()
+
+  useImperativeHandle(ref, () => {
+    // 回掉函数的返回值会变成ref的值
+    return {
+      changeInput(val) {
+        inputRef.current.value = val
+      },
+    }
+  })
+
+  return (
+    <div>
+      <input ref={inputRef} />
+    </div>
+  )
+})
+```
+
+> _在 Vue 中直接通过标记子组件的 ref 来在父组件中修改子组件的数据同样不推荐，应该通过调用子组件自己暴露的方法来修改才行_
+
+### 6.5 `useEffect()`
 
 React 项目通常会自动启用 React 的严格模式`React.StrictMode`，在开发模式下，它会自动重复调用一些函数以触发副作用，这样可以发现我们写的代码陷入各种重新渲染的死循环。
 
@@ -343,17 +391,83 @@ useEffect(() => {
 }, [])
 ```
 
-### 6.5 `useCallback()`
+#### 另外两个 Effect
+
+React18 中新增了两个功能类似`useEffect()`的钩子函数：`useLayoutEffect()`和`useInsertionEffect()`
+
+React 组件的实现步骤：1.组件挂载 => 2.state 改变 => 3.DOM 改变 => 4.绘制屏幕
+
+- `useInsertionEffect()` 执行的最早，在 2.state 改变后便执行了
+- `useLayoutEffect()` 其次，在 3.DOM 改变后才执行
+- `useEffect()` 最晚，在 4.绘制屏幕完成后才执行
+
+三者差别很小，需注意`useInsertionEffect()`钩子中无法获取到 DOM 对象即可。
+
+### 6.6 `useCallback()`
+
+作用：缓存函数
 
 组件进行重新渲染时，组件内的函数总是会重新创建，当我们希望能控制该函数的创建，就可以使用`useCallback()`方法。
 
 ```js
 // useCallback()的第一个参数为我们绑定的回调函数
-// useCallback()的第二参数为依赖项，只有当依赖项变化时，回调函数才会重新传教
+// useCallback()的第二参数为依赖项，只有当依赖项变化时，回调函数才会重新创建
 const clickHandler = useCallback(() => {
   // ...
 }, [])
 ```
+
+### 6.7 `useMemo()`
+
+作用：缓存函数的执行结果/缓存组件
+
+```js
+// useMemo()的第一个参数为我们绑定的回调函数
+// useMemo()的第二参数为依赖项，只有当依赖项变化时，回调函数才会重新执行
+const reuslt = useMemo(() => {
+  return 1
+}, [])
+```
+
+`useCallback()`和`useMemo()`
+
+- `useCallback()`返回一个函数，`useMemo()`返回一个函数执行的结果
+- 两者的第二个参数都是依赖项，依赖项变化时，执行作为第一个参数的回调函数
+
+### 6.8 其他不常用钩子
+
+#### `useDebugValue()`
+
+为自定义钩子设置标签，可在 React 开发工具中查看，主要用于调试。
+
+#### `useDeferredValue()`
+
+设置`state`延迟值，每次 state 修改时，都会触发两次重新渲染，
+
+```js
+const [count, setCount] = useState(1)
+const deferredCount = useDeferredValue(count)
+// count变化后，deferredCount会先后赋值为count的旧值和新值
+```
+
+#### `useTransition()`
+
+区分多个`state`更新的优先级。
+
+```js
+const [isPending, startTransition] = useTransition()
+
+setCount1(1) // 优先级高
+console.log(isPending) // true
+startTransition(() => {
+  setCount(2) // 优先级低
+  console.log(isPending) // false
+})
+```
+
+#### `useId()`
+
+生成项目中不重复的 ID。
 
 ## 7. portal
 
@@ -730,3 +844,5 @@ const Home = () => {
   )
 }
 ```
+
+> _V5 版本太过繁琐了，V6 版本要简洁许多，和 Vue-Router 有很多相似的地方_
